@@ -1,7 +1,7 @@
 import type { Customer, Invoice, InvoiceLine, Payment, PaymentTerm } from "@prisma/client";
 import { BrandLogo } from "@/components/brand";
 import { PAYMENT_METHOD_LABEL } from "@/lib/constants";
-import { fmtDate, money } from "@/lib/format";
+import { fmtDate, money, startOfDay } from "@/lib/format";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { InvoiceStatusBadge } from "./status-badge";
 
@@ -17,7 +17,7 @@ export type InvoiceDoc = Invoice & {
 /** The printable invoice body — same layout on screen, in print and in the portal. */
 export function InvoiceDocument({ invoice: inv, showLogo }: { invoice: InvoiceDoc; showLogo?: boolean }) {
   const due = inv.total - inv.amountPaid;
-  const overdue = inv.status === "CONFIRMED" && inv.dueDate < new Date();
+  const overdue = inv.status === "CONFIRMED" && inv.dueDate < startOfDay(new Date());
   return (
     <div className="text-[13px]">
       {showLogo && (

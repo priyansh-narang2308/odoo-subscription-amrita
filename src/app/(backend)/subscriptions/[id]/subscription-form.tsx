@@ -16,7 +16,7 @@ import {
 import type { ActionState } from "@/lib/action";
 import type { CatalogProduct, CatalogTax } from "@/lib/catalog";
 import { SUBSCRIPTION_PIPELINE, SUBSCRIPTION_STATUS_LABEL, billingLabel } from "@/lib/constants";
-import { fmtDate, money, relativeDays } from "@/lib/format";
+import { fmtDate, inputDate, money, relativeDays } from "@/lib/format";
 import { RecordForm, type FormAction } from "@/components/odoo/record-form";
 import { ActionButton } from "@/components/odoo/action-button";
 import { StatusBar } from "@/components/odoo/status-bar";
@@ -56,11 +56,12 @@ type Sub = {
   renewedFrom: { id: string; number: string } | null;
   renewal: { id: string; number: string } | null;
   lines: LineDraft[];
-  invoices: { id: string; number: string; invoiceDate: string; dueDate: string; total: number; amountPaid: number; status: string; periodStart: string | null; periodEnd: string | null }[];
+  quoteExpired: boolean;
+  invoices: { id: string; number: string; invoiceDate: string; dueDate: string; total: number; amountPaid: number; status: string; overdue: boolean; periodStart: string | null; periodEnd: string | null }[];
 };
 type Preview = { applied: { id: string; name: string; amount: number }[]; untaxed: number; discount: number; tax: number; total: number } | null;
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => inputDate(new Date());
 
 export function SubscriptionForm({
   subscription: sub,
@@ -136,7 +137,7 @@ export function SubscriptionForm({
     }
   };
 
-  const quoteExpired = sub?.status === "QUOTATION" && sub.quotationExpiresAt && sub.quotationExpiresAt.slice(0, 10) < today();
+  const quoteExpired = sub?.quoteExpired;
 
   const header = sub && (
     <>
@@ -309,7 +310,7 @@ export function SubscriptionForm({
                           <TD>{fmtDate(i.dueDate)}</TD>
                           <TD className="text-right tabular-nums">{money(i.total)}</TD>
                           <TD className="text-right tabular-nums">{money(i.amountPaid)}</TD>
-                          <TD><InvoiceStatusBadge status={i.status} overdue={i.dueDate.slice(0, 10) < today()} /></TD>
+                          <TD><InvoiceStatusBadge status={i.status} overdue={i.overdue} /></TD>
                         </ClickableRow>
                       ))}
                     </TBody>

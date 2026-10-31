@@ -4,7 +4,7 @@ import { requireStaff } from "@/lib/auth";
 import { loadCatalog } from "@/lib/catalog";
 import { getActivities } from "@/lib/activity";
 import { activeDiscounts, computeTotals } from "@/lib/billing";
-import { inputDate } from "@/lib/format";
+import { inputDate, startOfDay } from "@/lib/format";
 import * as A from "@/actions/subscriptions";
 import { Chatter } from "@/components/odoo/chatter";
 import { SubscriptionForm, type SubscriptionActions } from "./subscription-form";
@@ -70,6 +70,7 @@ export default async function SubscriptionPage({
     : {};
 
   const activities = sub ? await getActivities("subscription", sub.id) : [];
+  const today = startOfDay(new Date());
 
   return (
     <SubscriptionForm
@@ -103,7 +104,8 @@ export default async function SubscriptionPage({
             unitPrice: l.unitPrice,
             taxIds: l.taxes.map((t) => t.id),
           })),
-          invoices: sub.invoices.map((i) => ({ ...i, invoiceDate: i.invoiceDate.toISOString(), dueDate: i.dueDate.toISOString(), periodStart: i.periodStart?.toISOString() ?? null, periodEnd: i.periodEnd?.toISOString() ?? null })),
+          quoteExpired: sub.status === "QUOTATION" && !!sub.quotationExpiresAt && sub.quotationExpiresAt < today,
+          invoices: sub.invoices.map((i) => ({ ...i, overdue: i.status === "CONFIRMED" && i.dueDate < today, invoiceDate: i.invoiceDate.toISOString(), dueDate: i.dueDate.toISOString(), periodStart: i.periodStart?.toISOString() ?? null, periodEnd: i.periodEnd?.toISOString() ?? null })),
         }
       }
       defaults={{ customerId: sp.customer ?? null, salespersonId: user.id, paymentTermId: terms[0]?.id ?? null }}

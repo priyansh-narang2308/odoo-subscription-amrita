@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Banknote } from "lucide-react";
 import { initialState } from "@/lib/action";
+import { inputDate } from "@/lib/format";
 import type { FormAction } from "@/components/odoo/record-form";
 import { PAYMENT_METHODS, PAYMENT_METHOD_LABEL } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export function RegisterPayment({ action, amountDue, number }: { action: FormAct
                 <Input id="amount" name="amount" type="number" step="0.01" min="0.01" max={amountDue.toFixed(2)} defaultValue={amountDue.toFixed(2)} required />
               </Field>
               <Field label="Payment Date" htmlFor="date" error={state.fieldErrors?.date}>
-                <Input id="date" name="date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
+                <Input id="date" name="date" type="date" defaultValue={inputDate(new Date())} required />
               </Field>
               <Field label="Memo" htmlFor="ref">
                 <Input id="ref" value={number} readOnly className="bg-muted" />
