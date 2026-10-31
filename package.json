@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "vercel-build": "prisma generate && rm -f prisma/demo.db && export DATABASE_URL=\"file:$(pwd)/prisma/demo.db\" && prisma db push --skip-generate && tsx prisma/seed.ts && next build",
+    "vercel-build": "prisma generate && rm -f prisma/demo.db && export DATABASE_URL=\"file:$(pwd)/prisma/demo.db\" && prisma db push --skip-generate && BRIGHTLOOP_SEEDING=1 tsx prisma/seed.ts && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "db:push": "prisma db push",

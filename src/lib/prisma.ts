@@ -7,7 +7,9 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 // Vercel's filesystem is read-only apart from /tmp. The build seeds prisma/demo.db and
 // bundles it; each server instance copies it to /tmp once and works on that copy.
 function datasourceUrl(): string | undefined {
-  if (!process.env.VERCEL) return undefined;
+  // The build step seeds prisma/demo.db itself (it imports billing, which loads this file),
+  // so the /tmp redirect must only happen in the running server.
+  if (!process.env.VERCEL || process.env.BRIGHTLOOP_SEEDING) return undefined;
   // One file per deployment, so a reused instance never picks up another build's data.
   const target = `/tmp/brightloop-${process.env.VERCEL_DEPLOYMENT_ID ?? "local"}.db`;
   if (!fs.existsSync(target)) {
