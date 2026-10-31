@@ -17,6 +17,8 @@
     "setup": "prisma db push && tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "5.2.8",
+    "@fontsource/caveat": "5.2.8",
     "@prisma/client": "6.16.2",
     "bcryptjs": "3.0.2",
     "class-variance-authority": "0.7.1",
