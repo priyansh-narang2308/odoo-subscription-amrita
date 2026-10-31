@@ -189,7 +189,7 @@ export default async function Landing() {
         {/* Hero */}
         <section className="relative overflow-hidden">
           <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20 lg:pt-24">
-            <h1 className="rise isolate mx-auto max-w-4xl text-[2.6rem] font-bold leading-[1.08] tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
+            <h1 className="rise isolate mx-auto max-w-4xl font-hand text-[3.6rem] font-bold leading-[1] text-gray-900 sm:text-[5.5rem] lg:text-[6.5rem]">
               All your subscriptions <br className="hidden sm:block" />
               in <Highlight>one loop.</Highlight>
             </h1>
