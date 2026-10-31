@@ -9,6 +9,13 @@ import * as A from "@/actions/subscriptions";
 import { Chatter } from "@/components/odoo/chatter";
 import { SubscriptionForm, type SubscriptionActions } from "./subscription-form";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (id === "new") return { title: "New Subscription" };
+  const rec = await prisma.subscription.findUnique({ where: { id }, select: { number: true } });
+  return { title: rec?.number ?? "Not found" };
+}
+
 export default async function SubscriptionPage({
   params,
   searchParams,

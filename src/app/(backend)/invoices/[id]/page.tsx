@@ -17,6 +17,13 @@ import { Button } from "@/components/ui/button";
 import { RegisterPayment } from "./register-payment";
 import { DraftFields } from "./draft-fields";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (id === "new") return { title: "Invoice" };
+  const rec = await prisma.invoice.findUnique({ where: { id }, select: { number: true } });
+  return { title: rec?.number ?? "Not found" };
+}
+
 export default async function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await requireStaff();

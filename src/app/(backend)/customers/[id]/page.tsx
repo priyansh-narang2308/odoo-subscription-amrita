@@ -6,6 +6,13 @@ import { deleteCustomer, grantPortalAccess, revokePortalAccess, saveCustomer } f
 import { Chatter } from "@/components/odoo/chatter";
 import { CustomerForm } from "./customer-form";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (id === "new") return { title: "New Customer" };
+  const rec = await prisma.customer.findUnique({ where: { id }, select: { name: true } });
+  return { title: rec?.name ?? "Not found" };
+}
+
 export default async function CustomerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await requireStaff();

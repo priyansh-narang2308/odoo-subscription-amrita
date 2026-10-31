@@ -6,6 +6,13 @@ import { saveProduct, toggleProduct } from "@/actions/products";
 import { Chatter } from "@/components/odoo/chatter";
 import { ProductForm } from "./product-form";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (id === "new") return { title: "New Product" };
+  const rec = await prisma.product.findUnique({ where: { id }, select: { name: true } });
+  return { title: rec?.name ?? "Not found" };
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireStaff();
