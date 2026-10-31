@@ -72,7 +72,7 @@ async function main() {
     ["Peak Fitness", "Chandigarh"], ["Saffron Kitchens", "Lucknow"], ["Vertex Robotics", "Pune"],
     ["Zenith Hotels", "Udaipur"], ["Orbit Media", "Mumbai"], ["Evergreen Realty", "Noida"],
   ] as const;
-  const customers = [];
+  const customers: { id: string }[] = [];
   for (const [i, [name, city]] of companies.entries()) {
     const slug = name.toLowerCase().replace(/[^a-z]+/g, "");
     customers.push(
