@@ -56,7 +56,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         </div>
         <StatusBar steps={INVOICE_PIPELINE} current={inv.status} labels={INVOICE_STATUS_LABEL} />
       </div>
-      <div className="flex flex-col gap-4 px-4 py-4 xl:flex-row">
+      <div className="flex flex-col gap-4 px-4 py-4 2xl:flex-row">
         <div className="min-w-0 flex-1">
           <div className="o-sheet">
             {inv.status === "DRAFT" && (
@@ -65,7 +65,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             <InvoiceDocument invoice={inv} />
           </div>
         </div>
-        <aside className="w-full shrink-0 xl:w-[340px]"><Chatter entries={activities} /></aside>
+        <aside className="mx-auto w-full max-w-[1140px] shrink-0 2xl:mx-0 2xl:w-[360px]"><Chatter entries={activities} /></aside>
       </div>
     </>
   );

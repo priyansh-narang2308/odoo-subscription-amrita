@@ -19,8 +19,8 @@ export function StatusBar({
           <div
             key={s}
             className={cn(
-              "relative flex h-8 items-center whitespace-nowrap pl-5 pr-3 text-[12px] font-medium",
-              i === 0 && "pl-3",
+              "relative flex h-8 items-center whitespace-nowrap pl-7 pr-4 text-[12px] font-medium",
+              i === 0 && "pl-4",
               active ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -29,7 +29,7 @@ export function StatusBar({
               <span
                 aria-hidden
                 className={cn(
-                  "absolute -right-[9px] top-1/2 z-10 size-[22px] -translate-y-1/2 rotate-45 border-r border-t border-border",
+                  "absolute -right-[11px] top-1/2 z-10 size-[22px] -translate-y-1/2 rotate-45 border-r border-t border-border",
                   active ? "bg-accent" : "bg-card",
                 )}
               />

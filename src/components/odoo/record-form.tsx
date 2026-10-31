@@ -68,7 +68,7 @@ export function RecordForm({
           {header}
         </div>
       )}
-      <div className="flex flex-col gap-4 px-4 py-4 xl:flex-row">
+      <div className="flex flex-col gap-4 px-4 py-4 2xl:flex-row">
         <div className="min-w-0 flex-1">
           <div className="o-sheet">
             <FormError message={state.error} />
@@ -77,7 +77,7 @@ export function RecordForm({
             </fieldset>
           </div>
         </div>
-        {aside && <aside className="no-print w-full shrink-0 xl:w-[340px]">{aside}</aside>}
+        {aside && <aside className="no-print mx-auto w-full max-w-[1140px] shrink-0 2xl:mx-0 2xl:w-[360px]">{aside}</aside>}
       </div>
     </form>
   );
