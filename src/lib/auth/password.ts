@@ -12,12 +12,7 @@ export const passwordSchema = z
   .regex(/[a-z]/, "Password needs a lowercase letter")
   .regex(/[^A-Za-z0-9]/, "Password needs a special character");
 
-export const PASSWORD_RULES = [
-  { test: (p: string) => p.length > 8, label: "More than 8 characters" },
-  { test: (p: string) => /[A-Z]/.test(p), label: "One uppercase letter" },
-  { test: (p: string) => /[a-z]/.test(p), label: "One lowercase letter" },
-  { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "One special character" },
-];
+export { PASSWORD_RULES } from "./password-rules";
 
 export function hashPassword(plain: string) {
   return bcrypt.hash(plain, 10);
