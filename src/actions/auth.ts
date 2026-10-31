@@ -1,12 +1,12 @@
 "use server";
 
-import { createHash, randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createSession, destroySession, homeFor } from "@/lib/auth";
 import { hashPassword, passwordSchema, verifyPassword } from "@/lib/auth/password";
-import { sendMail } from "@/lib/mailer";
+import { issuePasswordLink } from "@/lib/invite";
 import { type ActionState, zodFieldErrors } from "@/lib/action";
 import type { Role } from "@/lib/constants";
 
@@ -82,18 +82,9 @@ export async function forgotPasswordAction(_: ActionState, fd: FormData): Promis
   const user = await prisma.user.findUnique({ where: { email: email.data } });
   if (!user || !user.active) return generic;
 
-  const token = randomBytes(32).toString("hex");
-  await prisma.passwordResetToken.create({
-    data: { userId: user.id, tokenHash: sha256(token), expiresAt: new Date(Date.now() + 60 * 60 * 1000) },
-  });
-  const link = `${process.env.APP_URL ?? "http://localhost:3000"}/reset-password/${token}`;
-  const sent = await sendMail({
-    to: user.email,
-    subject: "Reset your Brightloop password",
-    text: `Hello ${user.name},\n\nSomeone asked to reset the password for your Brightloop account.\nOpen this link within one hour to choose a new password:\n\n${link}\n\nIf this wasn't you, you can ignore this email.`,
-  });
+  const { link, delivered } = await issuePasswordLink(user, "reset");
   // Without SMTP in development, surface the link so the flow can be tested end to end
-  if (!sent.delivered && process.env.NODE_ENV !== "production") return { ...generic, devLink: link };
+  if (!delivered && process.env.NODE_ENV !== "production") return { ...generic, devLink: link };
   return generic;
 }
 
