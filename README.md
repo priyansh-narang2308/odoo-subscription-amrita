@@ -93,3 +93,29 @@ It is idempotent, so running it twice never creates duplicate invoices. Cancelli
 | `npm run typecheck` | Type-check the project                |
 | `npm run setup`     | Create the database and seed it       |
 | `npm run db:reset`  | Reset the database and reseed it      |
+| `npm test`          | Run the test suite on a throwaway DB  |
+| `npm run perf`      | Load-test with thousands of records   |
+
+## Tests and performance
+
+`npm test` runs 18 tests on a fresh `prisma/test.db`, so your data is never touched. They cover the rules the brief spells out:
+
+- **Password policy:** length, case and special character.
+- **Billing periods:** monthly dates are clamped to the end of the month.
+- **Taxes:** percentage and fixed.
+- **Discounts:** whole-subscription vs product scope, minimum quantity and purchase, date windows and usage limits.
+- **Billing day:** missed periods are caught up and nothing is billed twice.
+- **Plans:** subscriptions close automatically when their plan says so.
+- **Payments:** overpayment is rejected, and invoices are marked paid.
+
+`npm run perf` fills a separate `prisma/perf.db` and times the queries behind every main page. Results on a laptop:
+
+| Page                     | 5,000 subscriptions, 20k invoices | 20,000 subscriptions, 80k invoices |
+| ------------------------ | --------------------------------- | ---------------------------------- |
+| Dashboard (all time)     | 61 ms                             | 231 ms                             |
+| Subscriptions list       | 2 ms                              | 5 ms                               |
+| Subscriptions search     | 2 ms                              | 7 ms                               |
+| Invoices, overdue filter | 1 ms                              | 8 ms                               |
+| Payments list            | 0 ms                              | 2 ms                               |
+
+Every page stays far below the two-second target. Lists are paginated, aggregates run in the database, and the columns used for filtering are indexed.
