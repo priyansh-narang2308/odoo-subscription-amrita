@@ -22,7 +22,7 @@ async function ownSubscription(id: string) {
 }
 
 function refresh(id: string) {
-  revalidatePath("/my");
+  revalidatePath("/my", "layout");
   revalidatePath(`/my/subscriptions/${id}`);
   revalidatePath(`/subscriptions/${id}`);
 }
@@ -131,7 +131,7 @@ export async function payInvoiceOnline(id: string): Promise<ActionState> {
     if (e instanceof BillingError) return { error: e.message };
     throw e;
   }
-  revalidatePath("/my");
+  revalidatePath("/my", "layout");
   revalidatePath(`/my/invoices/${id}`);
   revalidatePath(`/invoices/${id}`);
   return { message: "Payment received — thank you!" };
