@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { Prisma } from "@prisma/client";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { PAGE_SIZE, PAYMENT_METHODS, PAYMENT_METHOD_LABEL } from "@/lib/constants";
@@ -12,8 +10,9 @@ import { Pager, parsePage } from "@/components/odoo/pager";
 import { ListView } from "@/components/odoo/list-view";
 import { EmptyState } from "@/components/odoo/empty-state";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TFoot, TH, THead, TR } from "@/components/ui/table";
+import { openInvoiceOptions } from "@/lib/create-options";
+import { NewPaymentDialog } from "./new-payment-dialog";
 
 export const metadata = { title: "Payments" };
 
@@ -28,7 +27,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
     ...(sp.filter === "this-month" ? { date: { gte: monthStart } } : sp.filter && { method: sp.filter }),
     ...(sp.q && { OR: [{ number: { contains: sp.q } }, { note: { contains: sp.q } }, { invoice: { number: { contains: sp.q } } }, { invoice: { customer: { name: { contains: sp.q } } } }] }),
   };
-  const [rows, total, sum] = await Promise.all([
+  const [rows, total, sum, openInvoices] = await Promise.all([
     prisma.payment.findMany({
       where,
       orderBy: [{ date: "desc" }, { number: "desc" }],
@@ -38,13 +37,14 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
     }),
     prisma.payment.count({ where }),
     prisma.payment.aggregate({ where, _sum: { amount: true } }),
+    openInvoiceOptions(),
   ]);
 
   return (
     <>
       <ControlPanel
         breadcrumbs={[{ label: "Payments" }]}
-        actions={<Button size="sm" asChild><Link href="/payments/new"><Plus /> New</Link></Button>}
+        actions={<NewPaymentDialog invoices={openInvoices} />}
         right={
           <>
             <SearchBar

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { BillingError, registerPayment } from "@/lib/billing";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import { date, str } from "@/lib/utils";
 
@@ -29,10 +29,8 @@ export async function registerPaymentAction(invoiceId: string, _: ActionState, f
     if (e instanceof BillingError) return { error: e.message };
     throw e;
   }
-  revalidatePath(`/invoices/${invoiceId}`);
-  revalidatePath("/invoices");
-  revalidatePath("/payments");
-  revalidatePath("/dashboard");
+  // Refreshes every staff page, including the sidebar's overdue count
+  revalidatePath("/", "layout");
   return { message: "Payment registered" };
 }
 
@@ -41,6 +39,6 @@ export async function recordPayment(_: ActionState, fd: FormData): Promise<Actio
   const invoiceId = str(fd, "invoiceId");
   if (!invoiceId) return { fieldErrors: { invoiceId: "Choose the invoice being paid" } };
   const res = await registerPaymentAction(invoiceId, _, fd);
-  if (res.message) redirect(`/invoices/${invoiceId}`);
+  if (res.message && !stayOnList(fd)) redirect(`/invoices/${invoiceId}`);
   return res;
 }

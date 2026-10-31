@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { Prisma } from "@prisma/client";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { PAGE_SIZE } from "@/lib/constants";
@@ -14,9 +12,10 @@ import { ListView } from "@/components/odoo/list-view";
 import { EmptyState } from "@/components/odoo/empty-state";
 import { SubscriptionStatusBadge } from "@/components/odoo/status-badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { subscriptionOptions } from "@/lib/create-options";
+import { NewSubscriptionDialog } from "./new-subscription-dialog";
 
 export const metadata = { title: "Subscriptions" };
 
@@ -61,7 +60,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
   await requireStaff();
   const page = parsePage(sp.page);
   const where = whereFor(sp);
-  const [rows, total, sum] = await Promise.all([
+  const [rows, total, sum, options] = await Promise.all([
     prisma.subscription.findMany({
       where,
       orderBy: [{ createdAt: "desc" }],
@@ -77,6 +76,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
     }),
     prisma.subscription.count({ where }),
     sp.customer ? prisma.customer.findUnique({ where: { id: sp.customer }, select: { name: true } }) : null,
+    subscriptionOptions(),
   ]);
   const today = startOfDay(new Date());
   const title = sp.filter === "quotations" ? "Quotations" : "Subscriptions";
@@ -85,7 +85,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
     <>
       <ControlPanel
         breadcrumbs={sum ? [{ label: sum.name, href: `/customers/${sp.customer}` }, { label: title }] : [{ label: title }]}
-        actions={<Button size="sm" asChild><Link href="/subscriptions/new"><Plus /> New</Link></Button>}
+        actions={<NewSubscriptionDialog options={options} />}
         right={
           <>
             <SearchBar placeholder="Search number, customer, product..." filters={FILTERS} />
@@ -96,7 +96,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
       <ListView>
         {rows.length === 0 ? (
           <EmptyState title="No subscriptions found" hint="Create a quotation, confirm it, and it becomes a running subscription billed automatically.">
-            <Button size="sm" asChild className="mt-2"><Link href="/subscriptions/new"><Plus /> New Subscription</Link></Button>
+            <div className="mt-2"><NewSubscriptionDialog options={options} triggerLabel="New Subscription" /></div>
           </EmptyState>
         ) : (
           <Table>

@@ -10,10 +10,9 @@ import { fmtDate, money } from "@/lib/format";
 import { type ActionState } from "@/lib/action";
 import { date, str } from "@/lib/utils";
 
-function refresh(id?: string) {
-  revalidatePath("/invoices");
-  revalidatePath("/dashboard");
-  if (id) revalidatePath(`/invoices/${id}`);
+function refresh() {
+  // The staff layout shows live counts (quotations, overdue, drafts), so refresh it with the page
+  revalidatePath("/", "layout");
 }
 
 export async function saveInvoice(id: string, _: ActionState, fd: FormData): Promise<ActionState> {
@@ -27,7 +26,7 @@ export async function saveInvoice(id: string, _: ActionState, fd: FormData): Pro
   if (dueDate < invoiceDate) return { fieldErrors: { dueDate: "Due date cannot be before the invoice date" } };
   await prisma.invoice.update({ where: { id }, data: { invoiceDate, dueDate, notes: str(fd, "notes") } });
   await logActivity("invoice", id, "Invoice updated", user.id);
-  refresh(id);
+  refresh();
   return { message: "Invoice saved" };
 }
 
@@ -41,7 +40,7 @@ export async function confirmInvoice(id: string): Promise<ActionState> {
     data: { status: paid ? "PAID" : "CONFIRMED", confirmedAt: new Date(), ...(paid && { paidAt: new Date() }) },
   });
   await logActivity("invoice", id, "Invoice confirmed", user.id);
-  refresh(id);
+  refresh();
   return { message: "Invoice confirmed" };
 }
 
@@ -57,7 +56,7 @@ export async function sendInvoice(id: string): Promise<ActionState> {
   });
   await prisma.invoice.update({ where: { id }, data: { sentAt: new Date() } });
   await logActivity("invoice", id, `Invoice sent to ${inv.customer.email}`, user.id);
-  refresh(id);
+  refresh();
   return { message: `Invoice sent to ${inv.customer.email}` };
 }
 
@@ -69,7 +68,7 @@ export async function cancelInvoiceAction(id: string): Promise<ActionState> {
     if (e instanceof BillingError) return { error: e.message };
     throw e;
   }
-  refresh(id);
+  refresh();
   revalidatePath("/subscriptions");
   return { message: "Invoice cancelled; its billing period can be invoiced again" };
 }
@@ -80,7 +79,7 @@ export async function resetInvoiceToDraft(id: string): Promise<ActionState> {
   if (inv.status !== "CONFIRMED" || inv._count.payments) return { error: "Only posted invoices without payments can be reset" };
   await prisma.invoice.update({ where: { id }, data: { status: "DRAFT", confirmedAt: null } });
   await logActivity("invoice", id, "Invoice reset to draft", user.id);
-  refresh(id);
+  refresh();
   return { message: "Invoice reset to draft" };
 }
 

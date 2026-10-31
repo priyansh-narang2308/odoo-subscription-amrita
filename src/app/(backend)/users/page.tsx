@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { Prisma } from "@prisma/client";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { ROLE_LABEL, type Role } from "@/lib/constants";
@@ -11,8 +9,8 @@ import { SearchBar } from "@/components/odoo/search-bar";
 import { ListView } from "@/components/odoo/list-view";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewUserDialog } from "./new-user-dialog";
 
 export const metadata = { title: "Users" };
 
@@ -28,7 +26,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     <>
       <ControlPanel
         breadcrumbs={[{ label: "Users" }]}
-        actions={<Button size="sm" asChild><Link href="/users/new"><Plus /> New</Link></Button>}
+        actions={<NewUserDialog />}
         right={<SearchBar placeholder="Search users..." filters={[{ value: "admin", label: "Administrators" }, { value: "internal", label: "Internal users" }, { value: "portal", label: "Portal users" }]} />}
       />
       <ListView>

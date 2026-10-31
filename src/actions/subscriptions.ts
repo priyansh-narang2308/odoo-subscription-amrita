@@ -9,16 +9,16 @@ import { nextNumber } from "@/lib/sequence";
 import { sendMail } from "@/lib/mailer";
 import { addDays, BillingError, generateInvoice } from "@/lib/billing";
 import { startOfDay, fmtDate, money } from "@/lib/format";
-import { parseLines } from "@/lib/lines";
+import { parseLines, type LineInput } from "@/lib/lines";
 import { type ActionState } from "@/lib/action";
 import { SUBSCRIPTION_STATUS_LABEL } from "@/lib/constants";
 import { date, str } from "@/lib/utils";
 
 const EDITABLE_HEADER = ["DRAFT", "QUOTATION"];
 
-function refresh(id?: string) {
-  revalidatePath("/subscriptions");
-  if (id) revalidatePath(`/subscriptions/${id}`);
+function refresh() {
+  // The staff layout shows live counts (quotations, overdue, drafts), so refresh it with the page
+  revalidatePath("/", "layout");
 }
 
 function fail(e: unknown): ActionState {
@@ -41,6 +41,9 @@ export async function saveSubscription(id: string | null, _: ActionState, fd: Fo
 
   const parsed = parseLines(fd);
   if ("error" in parsed) return { error: parsed.error };
+  // Quick create from the dialog sends no lines: start from the chosen template's lines
+  const templateId = str(fd, "templateId");
+  if (!fd.has("lines") && templateId) parsed.lines = await templateLines(templateId);
   const plan = await prisma.recurringPlan.findUnique({ where: { id: planId! } });
   if (!plan) return { fieldErrors: { planId: "Plan not found" } };
   const short = parsed.lines.find((l) => l.productId && l.quantity < plan.minQuantity);
@@ -58,13 +61,13 @@ export async function saveSubscription(id: string | null, _: ActionState, fd: Fo
   const header = {
     customerId: customerId!,
     planId: planId!,
-    templateId: str(fd, "templateId"),
+    templateId,
     startDate: startDate!,
     expirationDate,
   };
   const common = {
     paymentTermId: str(fd, "paymentTermId"),
-    salespersonId: str(fd, "salespersonId"),
+    salespersonId: fd.has("salespersonId") ? str(fd, "salespersonId") : user.id,
     notes: str(fd, "notes"),
   };
 
@@ -99,8 +102,28 @@ export async function saveSubscription(id: string | null, _: ActionState, fd: Fo
     }),
   ]);
   await logActivity("subscription", id, "Subscription updated", user.id);
-  refresh(id);
+  refresh();
   return { message: "Subscription saved" };
+}
+
+async function templateLines(templateId: string): Promise<LineInput[]> {
+  const t = await prisma.quotationTemplate.findUnique({
+    where: { id: templateId },
+    include: {
+      lines: {
+        orderBy: { sequence: "asc" },
+        include: { product: true, variant: { include: { attributeValue: true } }, taxes: { select: { id: true } } },
+      },
+    },
+  });
+  return (t?.lines ?? []).map((l) => ({
+    productId: l.productId,
+    variantId: l.variantId,
+    description: l.description || (l.variant ? `${l.product.name} (${l.variant.attributeValue.name})` : l.product.name),
+    quantity: l.quantity,
+    unitPrice: l.product.salesPrice + (l.variant?.extraPrice ?? 0),
+    taxIds: l.taxes.map((x) => x.id),
+  }));
 }
 
 async function load(id: string) {
@@ -117,7 +140,7 @@ async function transition(user: CurrentUser, id: string, from: string[], to: str
   }
   await prisma.subscription.update({ where: { id }, data: { status: to, ...extra } });
   await logActivity("subscription", id, note ?? `Status changed to ${SUBSCRIPTION_STATUS_LABEL[to]}`, user.id);
-  refresh(id);
+  refresh();
   return null;
 }
 
@@ -161,7 +184,7 @@ export async function startSubscription(id: string): Promise<ActionState> {
       data: { status: "CLOSED", closedAt: new Date(), closeReason: `Renewed by ${sub.number}` },
     });
     await logActivity("subscription", sub.renewedFromId, `Closed — renewed by ${sub.number}`, user.id);
-    refresh(sub.renewedFromId);
+    refresh();
   }
   return { message: "Subscription is now in progress" };
 }
@@ -175,7 +198,7 @@ export async function createSubscriptionInvoice(id: string): Promise<ActionState
   } catch (e) {
     return fail(e);
   }
-  refresh(id);
+  refresh();
   revalidatePath("/invoices");
   redirect(`/invoices/${invoiceId}`);
 }
@@ -256,7 +279,7 @@ export async function renewSubscription(id: string): Promise<ActionState> {
   });
   await logActivity("subscription", sub.id, `Renewal quotation ${renewal.number} created`, user.id);
   await logActivity("subscription", renewal.id, `Renewal of ${sub.number}`, user.id);
-  refresh(id);
+  refresh();
   redirect(`/subscriptions/${renewal.id}`);
 }
 

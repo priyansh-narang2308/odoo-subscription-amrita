@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { Prisma } from "@prisma/client";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { PAGE_SIZE } from "@/lib/constants";
@@ -12,8 +10,8 @@ import { ListView } from "@/components/odoo/list-view";
 import { EmptyState } from "@/components/odoo/empty-state";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewCustomerDialog } from "./new-customer-dialog";
 
 export const metadata = { title: "Customers" };
 
@@ -43,7 +41,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     <>
       <ControlPanel
         breadcrumbs={[{ label: "Customers" }]}
-        actions={<Button size="sm" asChild><Link href="/customers/new"><Plus /> New</Link></Button>}
+        actions={<NewCustomerDialog />}
         right={
           <>
             <SearchBar

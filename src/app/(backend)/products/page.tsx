@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { Prisma } from "@prisma/client";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { PAGE_SIZE, PRODUCT_TYPE_LABEL } from "@/lib/constants";
@@ -12,8 +10,8 @@ import { Pager, parsePage } from "@/components/odoo/pager";
 import { ListView } from "@/components/odoo/list-view";
 import { EmptyState } from "@/components/odoo/empty-state";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewProductDialog } from "./new-product-dialog";
 
 export const metadata = { title: "Products" };
 
@@ -29,7 +27,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     ...(sp.filter === "goods" && { type: "GOODS" }),
     ...(sp.q && { name: { contains: sp.q } }),
   };
-  const [rows, total] = await Promise.all([
+  const [rows, total, taxes] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy: { name: "asc" },
@@ -38,6 +36,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       include: { taxes: { select: { name: true } }, _count: { select: { variants: true } } },
     }),
     prisma.product.count({ where }),
+    prisma.tax.findMany({ where: { active: true }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
 
   return (
@@ -45,7 +44,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       <ControlPanel
         breadcrumbs={[{ label: "Products" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/products/new"><Plus /> New</Link></Button>
+          <NewProductDialog taxes={taxes} />
         )}
         right={
           <>
