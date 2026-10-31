@@ -23,7 +23,6 @@ export async function loginAction(_: ActionState, fd: FormData): Promise<ActionS
 
   const user = await prisma.user.findUnique({ where: { email: email.data } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
-    if (process.env.VERCEL) console.warn(`[auth] failed login for ${email.data}: user ${user ? "found" : "missing"}, ${await prisma.user.count()} users in db`);
     return { error: "Wrong login/password" };
   }
   if (!user.active) return { error: "This account has been deactivated. Contact your administrator." };
