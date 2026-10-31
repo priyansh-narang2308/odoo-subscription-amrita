@@ -8,9 +8,12 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 // bundles it; each server instance copies it to /tmp once and works on that copy.
 function datasourceUrl(): string | undefined {
   if (!process.env.VERCEL) return undefined;
-  const target = "/tmp/brightloop.db";
+  // One file per deployment, so a reused instance never picks up another build's data.
+  const target = `/tmp/brightloop-${process.env.VERCEL_DEPLOYMENT_ID ?? "local"}.db`;
   if (!fs.existsSync(target)) {
-    fs.copyFileSync(path.join(process.cwd(), "prisma", "demo.db"), target);
+    const source = path.join(process.cwd(), "prisma", "demo.db");
+    fs.copyFileSync(source, target);
+    console.log(`[db] copied ${source} (${fs.statSync(source).size} bytes) to ${target}`);
   }
   process.env.DATABASE_URL = `file:${target}`;
   return process.env.DATABASE_URL;
