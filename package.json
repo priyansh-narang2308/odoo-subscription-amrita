@@ -14,7 +14,9 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma db push --force-reset && tsx prisma/seed.ts",
-    "setup": "prisma db push && tsx prisma/seed.ts"
+    "setup": "prisma db push && tsx prisma/seed.ts",
+    "perf": "DATABASE_URL=file:./perf.db prisma db push --skip-generate && DATABASE_URL=file:./perf.db tsx prisma/seed.ts && DATABASE_URL=file:./perf.db tsx --conditions react-server scripts/perf.ts",
+    "test": "rm -f prisma/test.db && DATABASE_URL=file:./test.db prisma db push --skip-generate >/dev/null && DATABASE_URL=file:./test.db tsx prisma/seed.ts >/dev/null && DATABASE_URL=file:./test.db tsx --conditions react-server --test tests/*.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.2.8",
