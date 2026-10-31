@@ -15,7 +15,9 @@ export default async function MySubscriptions() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Subscriptions</h1>
-      <Card><PortalSubscriptionTable rows={subs} /></Card>
+      <Card>
+        <PortalSubscriptionTable rows={subs} />
+      </Card>
     </div>
   );
 }

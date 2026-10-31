@@ -9,7 +9,13 @@ export default async function MyProfile() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">My Account</h1>
-      <Card className="p-6"><ProfileForm name={user.name} email={user.email} role="Portal Customer" /></Card>
+      <Card className="p-6">
+        <ProfileForm
+          name={user.name}
+          email={user.email}
+          role="Portal Customer"
+        />
+      </Card>
     </div>
   );
 }
