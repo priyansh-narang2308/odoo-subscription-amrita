@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 import { BILLING_PERIODS } from "@/lib/constants";
 import { bool, date } from "@/lib/utils";
 
@@ -41,6 +41,7 @@ export async function savePlan(id: string | null, _: ActionState, fd: FormData):
   }
   const plan = await prisma.recurringPlan.create({ data });
   revalidatePath("/config/plans");
+  if (stayOnList(fd)) return { message: `Plan "${plan.name}" created` };
   redirect(`/config/plans/${plan.id}`);
 }
 

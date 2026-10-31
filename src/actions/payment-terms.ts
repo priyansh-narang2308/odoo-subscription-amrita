@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -24,6 +24,7 @@ export async function savePaymentTerm(id: string | null, _: ActionState, fd: For
   }
   const term = await prisma.paymentTerm.create({ data: parsed.data });
   revalidatePath("/config/payment-terms");
+  if (stayOnList(fd)) return { message: `Payment term "${term.name}" created` };
   redirect(`/config/payment-terms/${term.id}`);
 }
 

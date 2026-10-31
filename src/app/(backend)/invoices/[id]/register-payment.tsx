@@ -57,8 +57,8 @@ export function RegisterPayment({ action, amountDue, number }: { action: FormAct
             </Field>
           </DialogBody>
           <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Discard</Button>
             <SubmitButton pendingText="Saving…">Create Payment</SubmitButton>
-            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>Discard</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 import { AMOUNT_TYPES, DISCOUNT_SCOPES } from "@/lib/constants";
 import { date, str } from "@/lib/utils";
 
@@ -43,6 +43,7 @@ export async function saveDiscount(id: string | null, _: ActionState, fd: FormDa
   }
   const d = await prisma.discount.create({ data: { ...data, products: { connect: products } } });
   revalidatePath("/config/discounts");
+  if (stayOnList(fd)) return { message: `Discount "${d.name}" created` };
   redirect(`/config/discounts/${d.id}`);
 }
 

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -26,6 +26,7 @@ export async function saveTax(id: string | null, _: ActionState, fd: FormData): 
   }
   const tax = await prisma.tax.create({ data: parsed.data });
   revalidatePath("/config/taxes");
+  if (stayOnList(fd)) return { message: `Tax "${tax.name}" created` };
   redirect(`/config/taxes/${tax.id}`);
 }
 

@@ -44,11 +44,11 @@ export function ActionButton({
               <p className="text-[13px]">{confirm}</p>
             </DialogBody>
             <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
               <Button type="button" onClick={run} disabled={pending}>
                 {pending && <Loader2 className="animate-spin" />} Ok
-              </Button>
-              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-                Cancel
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -9,7 +9,7 @@ import { requireStaff } from "@/lib/auth";
 import { hashPassword } from "@/lib/auth/password";
 import { issuePasswordLink } from "@/lib/invite";
 import { logActivity } from "@/lib/activity";
-import { type ActionState, zodFieldErrors } from "@/lib/action";
+import { stayOnList, type ActionState, zodFieldErrors } from "@/lib/action";
 
 const opt = z.string().trim().optional().transform((v) => v || null);
 const schema = z.object({
@@ -33,6 +33,7 @@ export async function saveCustomer(id: string | null, _: ActionState, fd: FormDa
     const c = await prisma.customer.create({ data: parsed.data });
     await logActivity("customer", c.id, "Customer created", user.id);
     revalidatePath("/customers");
+    if (stayOnList(fd)) return { message: `Customer "${c.name}" created` };
     redirect(`/customers/${c.id}`);
   }
   const existing = await prisma.customer.findUniqueOrThrow({ where: { id }, include: { user: true } });

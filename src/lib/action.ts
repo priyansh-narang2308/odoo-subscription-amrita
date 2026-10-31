@@ -16,3 +16,8 @@ export function zodFieldErrors(issues: { path: (string | number)[]; message: str
   }
   return out;
 }
+
+/** Create dialogs post `_stay=1` to get a toast instead of a redirect to the new record. */
+export function stayOnList(fd: FormData) {
+  return fd.get("_stay") === "1";
+}
