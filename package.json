@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Subscription Management System — plans, subscriptions, recurring billing, payments and revenue reporting in one place.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
