@@ -1,13 +1,11 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { ControlPanel } from "@/components/odoo/control-panel";
 import { ClickableRow } from "@/components/odoo/clickable-row";
 import { ActiveBadge } from "@/components/odoo/status-badge";
 import { ListView } from "@/components/odoo/list-view";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewTaxDialog } from "./new-tax-dialog";
 
 export const metadata = { title: "Taxes" };
 
@@ -19,7 +17,7 @@ export default async function TaxesPage() {
       <ControlPanel
         breadcrumbs={[{ label: "Taxes" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/config/taxes/new"><Plus /> New</Link></Button>
+          <NewTaxDialog />
         )}
       />
       <ListView>

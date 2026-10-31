@@ -4,13 +4,20 @@ import { requireStaff } from "@/lib/auth";
 import { deleteAttribute, saveAttribute } from "@/actions/attributes";
 import { AttributeForm } from "./attribute-form";
 
-export default async function AttributePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AttributePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const user = await requireStaff();
-  const attr = id === "new" ? null : await prisma.productAttribute.findUnique({
-    where: { id },
-    include: { values: { orderBy: { name: "asc" } } },
-  });
+  const attr =
+    id === "new"
+      ? null
+      : await prisma.productAttribute.findUnique({
+          where: { id },
+          include: { values: { orderBy: { name: "asc" } } },
+        });
   if (id !== "new" && !attr) notFound();
   return (
     <AttributeForm

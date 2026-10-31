@@ -1,12 +1,10 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { ControlPanel } from "@/components/odoo/control-panel";
 import { ClickableRow } from "@/components/odoo/clickable-row";
 import { ListView } from "@/components/odoo/list-view";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewPaymentTermDialog } from "./new-payment-term-dialog";
 
 export const metadata = { title: "Payment Terms" };
 
@@ -21,7 +19,7 @@ export default async function PaymentTermsPage() {
       <ControlPanel
         breadcrumbs={[{ label: "Payment Terms" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/config/payment-terms/new"><Plus /> New</Link></Button>
+          <NewPaymentTermDialog />
         )}
       />
       <ListView>

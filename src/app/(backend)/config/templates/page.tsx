@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { billingLabel } from "@/lib/constants";
@@ -7,23 +5,26 @@ import { ControlPanel } from "@/components/odoo/control-panel";
 import { ClickableRow } from "@/components/odoo/clickable-row";
 import { ListView } from "@/components/odoo/list-view";
 import { EmptyState } from "@/components/odoo/empty-state";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewTemplateDialog } from "./new-template-dialog";
 
 export const metadata = { title: "Quotation Templates" };
 
 export default async function TemplatesPage() {
   const user = await requireStaff();
-  const templates = await prisma.quotationTemplate.findMany({
-    orderBy: { name: "asc" },
-    include: { plan: true, _count: { select: { lines: true, subscriptions: true } } },
-  });
+  const [templates, plans] = await Promise.all([
+    prisma.quotationTemplate.findMany({
+      orderBy: { name: "asc" },
+      include: { plan: true, _count: { select: { lines: true, subscriptions: true } } },
+    }),
+    prisma.recurringPlan.findMany({ where: { active: true }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ]);
   return (
     <>
       <ControlPanel
         breadcrumbs={[{ label: "Quotation Templates" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/config/templates/new"><Plus /> New</Link></Button>
+          <NewTemplateDialog plans={plans} />
         )}
       />
       <ListView>

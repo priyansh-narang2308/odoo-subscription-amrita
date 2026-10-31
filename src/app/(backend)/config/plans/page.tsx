@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { billingLabel } from "@/lib/constants";
@@ -9,8 +7,8 @@ import { ClickableRow } from "@/components/odoo/clickable-row";
 import { ActiveBadge } from "@/components/odoo/status-badge";
 import { ListView } from "@/components/odoo/list-view";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewPlanDialog } from "./new-plan-dialog";
 
 export const metadata = { title: "Recurring Plans" };
 
@@ -25,7 +23,7 @@ export default async function PlansPage() {
       <ControlPanel
         breadcrumbs={[{ label: "Recurring Plans" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/config/plans/new"><Plus /> New</Link></Button>
+          <NewPlanDialog />
         )}
       />
       <ListView>

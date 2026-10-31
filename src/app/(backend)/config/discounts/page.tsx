@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import { DISCOUNT_SCOPE_LABEL } from "@/lib/constants";
@@ -8,8 +6,8 @@ import { ControlPanel } from "@/components/odoo/control-panel";
 import { ClickableRow } from "@/components/odoo/clickable-row";
 import { ListView } from "@/components/odoo/list-view";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { NewDiscountDialog } from "./new-discount-dialog";
 
 export const metadata = { title: "Discounts" };
 
@@ -24,13 +22,16 @@ function discountState(d: { active: boolean; startDate: Date | null; endDate: Da
 
 export default async function DiscountsPage() {
   const user = await requireStaff();
-  const discounts = await prisma.discount.findMany({ orderBy: [{ active: "desc" }, { createdAt: "desc" }] });
+  const [discounts, products] = await Promise.all([
+    prisma.discount.findMany({ orderBy: [{ active: "desc" }, { createdAt: "desc" }] }),
+    prisma.product.findMany({ where: { active: true }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ]);
   return (
     <>
       <ControlPanel
         breadcrumbs={[{ label: "Discounts" }]}
         actions={user.role === "ADMIN" && (
-          <Button size="sm" asChild><Link href="/config/discounts/new"><Plus /> New</Link></Button>
+          <NewDiscountDialog products={products} />
         )}
       />
       <ListView>
