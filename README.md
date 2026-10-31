@@ -15,6 +15,8 @@ npm run setup      # creates the SQLite database and loads demo data
 npm run dev        # http://localhost:3000
 ```
 
+Open http://localhost:3000 for the landing page, then use **Sign in** or **Try the live demo**.
+
 `npm run db:reset` wipes the database and reseeds it. `SEED_LARGE=1 npm run db:seed` adds 3,000 extra subscriptions for performance testing.
 
 ### Demo accounts
@@ -32,6 +34,7 @@ Password reset and portal invitation emails are sent over SMTP when `SMTP_HOST` 
 
 ## Features
 
+- **Landing page.** An Odoo-inspired public home page with hand-drawn Caveat accents. It shows live counts from the database, adapts to signed-in users and works on phones. Fonts are bundled, so nothing loads from a CDN.
 - **Authentication.** Sign up with a unique email and log in. Passwords must be more than 8 characters with upper case, lower case and a special character. Password reset works by emailed link, using hashed one-time tokens.
 - **Roles.**
   - *Admin*: full access, including configuration and staff management.
@@ -54,10 +57,12 @@ prisma/              schema and seed data
 src/
   actions/           server actions (one file per domain)
   app/
+    page.tsx         public landing page
     (auth)/          login, signup, password reset
     (backend)/       staff application (subscriptions, invoices, config, reports…)
     my/              customer portal
   components/
+    landing/         landing page header, mockups and hand-drawn accents
     odoo/            control panel, status bar, chatter, list views, order lines…
     ui/              shadcn-style primitives
   lib/

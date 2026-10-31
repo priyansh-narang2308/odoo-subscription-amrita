@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, UserRound } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
-import { BrandLogo } from "@/components/brand";
+import { BrandLogo, BrandMark } from "@/components/brand";
 import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -26,8 +26,11 @@ export function PortalHeader({ name, email }: { name: string; email: string }) {
   const pathname = usePathname();
   return (
     <header className="no-print sticky top-0 z-40 border-b bg-white">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
-        <Link href="/my"><BrandLogo /></Link>
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:gap-6">
+        <Link href="/my" aria-label="Portal home">
+          <BrandMark className="sm:hidden" />
+          <BrandLogo className="hidden sm:flex" />
+        </Link>
         <nav className="flex h-full items-center gap-1">
           {LINKS.map((l) => {
             const active = l.href === "/my" ? pathname === "/my" : pathname.startsWith(l.href);
@@ -35,7 +38,7 @@ export function PortalHeader({ name, email }: { name: string; email: string }) {
               <Link
                 key={l.href}
                 href={l.href}
-                className={cn("flex h-full items-center border-b-2 px-3 text-[13px] font-medium", active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}
+                className={cn("flex h-full items-center border-b-2 px-2 text-[13px] sm:px-3 font-medium", active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}
               >
                 {l.label}
               </Link>

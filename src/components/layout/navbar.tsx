@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Grip, LogOut, UserRound } from "lucide-react";
+import { ChevronDown, Grip, LogOut, Menu, UserRound } from "lucide-react";
 import { appForPath } from "@/lib/apps";
 import { ROLE_LABEL, type Role } from "@/lib/constants";
 import { logoutAction } from "@/actions/auth";
@@ -42,6 +42,38 @@ export function Navbar({ user }: { user: { name: string; email: string; role: Ro
             <Link href={app.href} className="flex h-full items-center pl-1 pr-3 text-[15px] font-semibold hover:bg-black/10">
               {app.name}
             </Link>
+            {/* Small screens: the app menus collapse into one dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="flex h-full items-center px-2.5 outline-none hover:bg-black/10 data-[state=open]:bg-black/15 md:hidden"
+                aria-label={`${app.name} menu`}
+              >
+                <Menu className="size-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {app.menus.map((m) =>
+                  "items" in m ? (
+                    <div key={m.label}>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>{m.label}</DropdownMenuLabel>
+                      {m.items
+                        .filter((i) => !i.adminOnly || isAdmin)
+                        .map((i) => (
+                          <DropdownMenuItem key={i.href} asChild>
+                            <Link href={i.href}>{i.label}</Link>
+                          </DropdownMenuItem>
+                        ))}
+                    </div>
+                  ) : (
+                    (!m.adminOnly || isAdmin) && (
+                      <DropdownMenuItem key={m.href} asChild>
+                        <Link href={m.href}>{m.label}</Link>
+                      </DropdownMenuItem>
+                    )
+                  ),
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <nav className="hidden h-full items-center md:flex">
               {app.menus.map((m) =>
                 "items" in m ? (
