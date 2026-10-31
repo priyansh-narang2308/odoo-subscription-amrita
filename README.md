@@ -10,24 +10,6 @@ An Odoo-style subscription management platform for **Brightloop Software**, buil
 
 ---
 
-## Contents
-
-- [The problem](#the-problem)
-- [What it does](#what-it-does)
-- [Quick start](#quick-start)
-- [Architecture](#architecture)
-- [Data model](#data-model)
-- [Business workflows](#business-workflows)
-- [Roles and permissions](#roles-and-permissions)
-- [Security](#security)
-- [Tests and performance](#tests-and-performance)
-- [Project structure](#project-structure)
-- [Requirements coverage](#requirements-coverage)
-- [Scripts](#scripts)
-- [Team](#team)
-
----
-
 ## The problem
 
 Brightloop sells everything on subscription. Today its subscriptions live in a spreadsheet, renewals are remembered by whoever notices, invoices are typed by hand, payments are matched by scrolling bank statements, and revenue reports take days.
