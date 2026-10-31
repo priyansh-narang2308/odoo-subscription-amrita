@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Odoo-inspired palette mapped onto shadcn tokens */
+:root {
+  --radius: 0.375rem;
+  --background: #f9fafb;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+  --primary: #714b67;
+  --primary-foreground: #ffffff;
+  --primary-hover: #5f3d56;
+  --secondary: #e7e9ed;
+  --secondary-foreground: #374151;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f1eaf0;
+  --accent-foreground: #714b67;
+  --teal: #017e84;
+  --destructive: #d23f3a;
+  --destructive-foreground: #ffffff;
+  --success: #28a745;
+  --warning: #e99d00;
+  --info: #17a2b8;
+  --border: #dee2e6;
+  --input: #d8dadd;
+  --ring: #714b67;
+}
+
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-teal: var(--teal);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground text-sm;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* Odoo form "sheet" */
+  .o-sheet {
+    @apply mx-auto w-full max-w-[1140px] rounded-sm border bg-card px-6 py-6 shadow-[0_1px_2px_rgba(0,0,0,0.05)] md:px-10 md:py-8;
+  }
+  /* Odoo field label/value pairs */
+  .o-field {
+    @apply grid grid-cols-1 items-center gap-1 py-1.5 sm:grid-cols-[170px_1fr] sm:gap-3;
+  }
+  .o-label {
+    @apply text-[13px] font-semibold text-foreground/90;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
