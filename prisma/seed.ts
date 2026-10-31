@@ -486,7 +486,7 @@ async function main() {
           : start,
         quotationExpiresAt:
           opts.status === "QUOTATION"
-            ? addDays(new Date(), 10 - (i % 15))
+            ? addDays(new Date(), 4 + (i % 12))
             : null,
         createdAt: addDays(start, -5),
         lines: {

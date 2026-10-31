@@ -9,3 +9,6 @@ prisma/*.db
 prisma/*.db-journal
 .DS_Store
 .claude
+
+# demo video (large binary, shared separately)
+/demo/
