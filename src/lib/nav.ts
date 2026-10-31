@@ -14,13 +14,17 @@ import {
   RefreshCcw,
   Shapes,
   UserCog,
+  UserRound,
   Users,
   type LucideIcon,
 } from "lucide-react";
 import type { Role } from "@/lib/constants";
 
 /** Live counters shown as badges next to sidebar items. */
-export type NavBadge = "quotations" | "overdue" | "draftInvoices";
+export type NavBadge = "quotations" | "overdue" | "draftInvoices" | "myQuotations" | "myUnpaid";
+
+/** Badges that signal money or action that is late, shown in red. */
+export const ALERT_BADGES: NavBadge[] = ["overdue", "myUnpaid"];
 
 export type NavItem = {
   label: string;
@@ -86,7 +90,24 @@ export const NAV: NavGroup[] = [
   },
 ];
 
+/** The customer portal has its own, much smaller menu. */
+export const PORTAL_NAV: NavGroup[] = [
+  {
+    label: "My account",
+    items: [
+      { label: "Overview", href: "/my", icon: Home },
+      { label: "Subscriptions", href: "/my/subscriptions", icon: RefreshCcw, badge: "myQuotations" },
+      { label: "Invoices", href: "/my/invoices", icon: FileText, badge: "myUnpaid" },
+    ],
+  },
+  {
+    label: "Settings",
+    items: [{ label: "Profile", href: "/my/profile", icon: UserRound }],
+  },
+];
+
 export function navFor(role: Role) {
+  if (role === "PORTAL") return PORTAL_NAV;
   return NAV.filter((g) => !g.roles || g.roles.includes(role))
     .map((g) => ({ ...g, items: g.items.filter((i) => !i.roles || i.roles.includes(role)) }))
     .filter((g) => g.items.length);

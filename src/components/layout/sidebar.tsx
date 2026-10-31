@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 import {
+  ALERT_BADGES,
   activeNavItem,
   navFor,
   type NavBadge,
@@ -190,6 +191,7 @@ function SidebarBody({
   const groups = useMemo(() => navFor(user.role), [user.role]);
   const active = activeNavItem(groups, pathname, search)?.item;
   const readOnly = user.role !== "ADMIN";
+  const portal = user.role === "PORTAL";
 
   return (
     <>
@@ -200,7 +202,7 @@ function SidebarBody({
         )}
       >
         <Link
-          href="/home"
+          href={portal ? "/my" : "/home"}
           className="flex min-w-0 items-center gap-2.5"
           aria-label="Home"
         >
@@ -211,7 +213,7 @@ function SidebarBody({
                 bright<span className="text-[#017e84]">loop</span>
               </span>
               <span className="block truncate text-[11px] text-gray-500">
-                Subscription Management
+                {portal ? "Customer Portal" : "Subscription Management"}
               </span>
             </span>
           )}
@@ -292,7 +294,7 @@ function SidebarBody({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/profile">
+              <Link href={portal ? "/my/profile" : "/profile"}>
                 <UserRound /> My profile
               </Link>
             </DropdownMenuItem>
@@ -327,7 +329,7 @@ function SidebarLink({
 }) {
   const Icon = item.icon;
   const href = item.query ? `${item.href}?${item.query}` : item.href;
-  const alert = item.badge === "overdue";
+  const alert = !!item.badge && ALERT_BADGES.includes(item.badge);
   const showCount = !!count && count > 0;
 
   const link = (
