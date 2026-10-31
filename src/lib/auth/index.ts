@@ -36,7 +36,8 @@ export function homeFor(role: Role) {
 /** Require a signed-in user, optionally with one of the given roles. */
 export async function requireUser(roles?: Role[]) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  // A valid token for a user who no longer exists: clear the cookie rather than loop through middleware
+  if (!user) redirect("/logout");
   if (roles && !roles.includes(user.role)) redirect(homeFor(user.role));
   return user;
 }
@@ -46,6 +47,6 @@ export const requireAdmin = () => requireUser(["ADMIN"]);
 
 export async function requirePortal() {
   const user = await requireUser(["PORTAL"]);
-  if (!user.customerId) redirect("/login");
+  if (!user.customerId) redirect("/logout");
   return user as CurrentUser & { customerId: string };
 }
