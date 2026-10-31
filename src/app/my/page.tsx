@@ -22,7 +22,7 @@ export default async function PortalHome() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold">Welcome, {user.name.split(" ")[0]}</h1>
+        <h1 className="text-2xl font-semibold">Welcome, {user.name}</h1>
         <p className="text-[13px] text-muted-foreground">Manage your subscriptions and invoices without emailing anyone.</p>
       </div>
       {pendingQuotes > 0 && (
